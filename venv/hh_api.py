@@ -1,0 +1,34 @@
+import requests
+import json
+
+
+class HH_vacancy():
+    HH_URL = "https://api.hh.ru/vacancies"
+    HH_COMPANY = "https://api.hh.ru/employers"
+    HH_AREAS = "https://api.hh.ru/suggests/areas"
+    company_id = "id_companies.json"
+
+    def get_company_id(self):
+        company_id_list = []
+        with open(self.company_id, encoding="utf-8") as file:
+            company_json = json.load(file)
+            for company in company_json:
+                company_id_list.append(company["id"])
+        return company_id_list
+
+    def get_company_name(self):
+        company_name_list = []
+        with open(self.company_id, encoding="utf-8") as file:
+            company_json = json.load(file)
+            for company in company_json:
+                company_name_list.append(company["name"])
+        return company_name_list_list
+
+    def get_vacancy(self):
+        vacancy_list = []
+        employee_list = self.get_company_name()
+        for num_id in range(len(employee_list)):
+            params = {"employer_id": employee_list[num_id],
+                      "per_page": 100,
+                      "only_with_salary": True,
+                      }
