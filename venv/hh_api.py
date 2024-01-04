@@ -54,8 +54,9 @@ class HH_vacancy():
                 for item in vacancies["items"]:
                     if item["salary"]["from"]:
                         vacancy_list.append(item)
-        for vacancy in vacancy_list:
-            print(vacancy)
+        return vacancy_list
+        #for vacancy in vacancy_list:
+        #    print(vacancy)
 
     def create_database(self, cur):
        cur.execute(f'drop database if exists {database_name}');
@@ -64,39 +65,36 @@ class HH_vacancy():
        return result
 
     def create_tables(self, cur):
-        cur.execute('''create table employers(
+        cur.execute('''create table if not exists employers(
                 employer_id INTEGER PRIMARY KEY,
                 employer_name VARCHAR(100) NOT NULL,
-                open_vacancies INTEGER,
-                employer_url VARCHAR(50)
-                ) ''');
-        cur.execute('''create table vacancies(
+                employer_url VARCHAR(50),
+                ) ''')
+        cur.execute('''create table if not exists vacancies(
                 vacancy_id INTEGER PRIMARY KEY,
                 employer_id INTEGER REFERENCES employers(employer_id),
                 employer_name VARCHAR(100) NOT NULL,
                 city varchar(50),
                 vacancy_name VARCHAR(100) NOT NULL,
                 salary_min INTEGER,
-                requirements text,
                 vacancy_url VARCHAR(50)
                 )''');
         result = cur.fetchall()
         return result
 
-    def insert_values_employee(self, dat, cur):
-        cur.execute('''insert into employers(employer_id, employer_name, open_vacancies, employer_url)
-                          VALUES( %s, %s, %s, %s)''',
-                            (dat['hh_id_company'], dat['name'], count_vacancy, dat['url_company']))
+    def insert_values_employee(self, vacancy, cur):
+        cur.execute('''insert into employers(employer_id, employer_name, employer_url)
+                          VALUES( %s, %s, %s)''',
+                            (vacancy["employer"]["id"], vacancy["employer"]['name'],
+                             vacancy["employer"]['url']))
 
-    def insert_values_vacancies(self, dat, cur):
+    def insert_values_vacancies(self, vacancy, cur):
         cur.execute('''insert into vacancies(vacancy_id, city, employer_id, employer_name,
          vacancy_name, salary_min, salary_currency, vacancy_url)
-         VALUES( %s, %s, %s, %s, %s, %s, %s, %s)''',
-                            (vacancy[['id'], vacancy['area']['name'],
-                             vacancy["employer"]["id"]:, vacancy["employer"]["name"],
-                             vacancy['name'], vacancy['salary']['from'],
-                             vacancy['salary']["currency"], vacancy['alternate_url'])
-                    )
+         VALUES( %s, %s, %s, %s, %s, %s, %s)''', (vacancy['id'], vacancy['area']['name'],
+                             vacancy["employer"]["name"], vacancy['name'], vacancy['salary']['from'],
+                             vacancy['salary']["currency"], vacancy['alternate_url']))
+
 
 
 hh = HH_vacancy()
