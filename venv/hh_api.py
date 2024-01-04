@@ -57,10 +57,46 @@ class HH_vacancy():
         for vacancy in vacancy_list:
             print(vacancy)
 
-    def delete_database(self, cur):
-       cur.execute('''DROP DATABASE IF EXISTS hh;''');
+    def create_database(self, cur):
+       cur.execute(f'drop database if exists {database_name}');
+       cur.execute(f'create database {database_name}')
        result = cur.fetchall()
        return result
+
+    def create_tables(self, cur):
+        cur.execute('''create table employers(
+                employer_id INTEGER PRIMARY KEY,
+                employer_name VARCHAR(100) NOT NULL,
+                open_vacancies INTEGER,
+                employer_url VARCHAR(50)
+                ) ''');
+        cur.execute('''create table vacancies(
+                vacancy_id INTEGER PRIMARY KEY,
+                employer_id INTEGER REFERENCES employers(employer_id),
+                employer_name VARCHAR(100) NOT NULL,
+                city varchar(50),
+                vacancy_name VARCHAR(100) NOT NULL,
+                salary_min INTEGER,
+                requirements text,
+                vacancy_url VARCHAR(50)
+                )''');
+        result = cur.fetchall()
+        return result
+
+    def insert_values_employee(self, dat, cur):
+        cur.execute('''insert into employers(employer_id, employer_name, open_vacancies, employer_url)
+                          VALUES( %s, %s, %s, %s)''',
+                            (dat['hh_id_company'], dat['name'], count_vacancy, dat['url_company']))
+
+    def insert_values_vacancies(self, dat, cur):
+        cur.execute('''insert into vacancies(vacancy_id, city, employer_id, employer_name,
+         vacancy_name, salary_min, salary_currency, vacancy_url)
+         VALUES( %s, %s, %s, %s, %s, %s, %s, %s)''',
+                            (vacancy[['id'], vacancy['area']['name'],
+                             vacancy["employer"]["id"]:, vacancy["employer"]["name"],
+                             vacancy['name'], vacancy['salary']['from'],
+                             vacancy['salary']["currency"], vacancy['alternate_url'])
+                    )
 
 
 hh = HH_vacancy()
