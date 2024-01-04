@@ -2,6 +2,7 @@ import psycopg2
 
 class DBManager():
     """Класс для взаимодействия с базой данных"""
+
     def get_companies_and_vacancies_count(self, cur):
         """Метод получает список всех кампаний и количество вакансий у каждой кампании"""
         cur.execute(f"""Select employer, COUNT(vacancy_name) from employers  as vacancy_count
