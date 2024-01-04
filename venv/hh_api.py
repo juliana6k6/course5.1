@@ -57,5 +57,11 @@ class HH_vacancy():
         for vacancy in vacancy_list:
             print(vacancy)
 
+    def delete_database(self, cur):
+       cur.execute('''DROP DATABASE IF EXISTS hh;''');
+       result = cur.fetchall()
+       return result
+
+
 hh = HH_vacancy()
 hh.get_vacancy()
