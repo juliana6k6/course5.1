@@ -3,6 +3,7 @@ import psycopg2
 class DBManager():
     """Класс для взаимодействия с базой данных"""
 
+
     def get_companies_and_vacancies_count(self, cur):
         """Метод получает список всех кампаний и количество вакансий у каждой кампании"""
         cur.execute(f"""Select employer, COUNT(vacancy_name) from employers  as vacancy_count
@@ -11,8 +12,7 @@ class DBManager():
         return result
     def get_all_vacancies(self, cur):
         """Получает список всех вакансий"""
-        cur.execute(f"""Select employer, vacancy_name, salary_min, vacancy_url 
-        from vacancies order by salary_min DESC""")
+        cur.execute(f"""Select * from vacancies order by salary_min DESC""")
         result = cur.fetchall()
         return result
 
@@ -25,8 +25,7 @@ class DBManager():
 
     def get_vacancies_with_higher_salary(self, cur):
         """Получает список всех вакансий у которых з/п выше средней"""
-        cur.execute(f"""Select employer, vacancy_name, salary_min, vacancy_url
-            from vacancies where salary_min > AVG(salary_min)
+        cur.execute(f"""Select * from vacancies where salary_min > AVG(salary_min)
             order by salary_min DESC""")
         result = cur.fetchall()
         return result

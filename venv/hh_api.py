@@ -18,9 +18,13 @@ class HH_vacancy():
     """Класс для работы с API платформы HeadHunter"""
 
     HH_URL = "https://api.hh.ru/vacancies"
-    HH_COMPANY = "https://api.hh.ru/employers"
-    HH_AREAS = "https://api.hh.ru/suggests/areas"
-    company_id = "id_companies.json"
+    # HH_COMPANY = "https://api.hh.ru/employers"
+    # HH_AREAS = "https://api.hh.ru/suggests/areas"
+    # company_id = "id_companies.json"
+
+    def __init__(self, user: str="postgres", password: str="1967", host: str ='localhost', port: str ='5432'):
+        self.conn = psycopg2.connect(user=user, password=password, host=host, port=port)
+        self.cur = self.conn.cursor()
 
     # def get_company_id(self):
     #     company_id_list = []
@@ -41,7 +45,7 @@ class HH_vacancy():
 
 
     def get_vacancy(self):
-        """Получение данных о вакансиях работодателя"""
+        """Получение данных о вакансиях работодателя с платформы HeadHunter в json-формате"""
         vacancy_list = []
         for employer_id in employer_ids:
             params = {"employer_id": employer_id,
@@ -55,22 +59,23 @@ class HH_vacancy():
                     if item["salary"]["from"]:
                         vacancy_list.append(item)
         return vacancy_list
-        #for vacancy in vacancy_list:
+        # for vacancy in vacancy_list:
         #    print(vacancy)
 
-    def create_database(self, cur):
-       cur.execute(f'drop database if exists {database_name}');
-       cur.execute(f'create database {database_name}')
-       result = cur.fetchall()
-       return result
+    def create_database(self, db_name):
+            with self.conn:
+                 self.cur.execute(f'drop database if exists {db_name}');
+                 self.cur.execute(f'create database {db_name}')
 
-    def create_tables(self, cur):
-        cur.execute('''create table if not exists employers(
+
+    def create_tables(self):
+        with self.conn:
+             self.cur.execute(f'''create table if not exists employers(
                 employer_id INTEGER PRIMARY KEY,
                 employer_name VARCHAR(100) NOT NULL,
-                employer_url VARCHAR(50),
-                ) ''')
-        cur.execute('''create table if not exists vacancies(
+                employer_url VARCHAR(50),) ''')
+
+             self.cur.execute(f'''create table if not exists vacancies(
                 vacancy_id INTEGER PRIMARY KEY,
                 employer_id INTEGER REFERENCES employers(employer_id),
                 employer_name VARCHAR(100) NOT NULL,
@@ -78,18 +83,21 @@ class HH_vacancy():
                 vacancy_name VARCHAR(100) NOT NULL,
                 salary_min INTEGER,
                 vacancy_url VARCHAR(50)
-                )''');
-        result = cur.fetchall()
-        return result
+                )''')
 
-    def insert_values_employee(self, vacancy, cur):
-        cur.execute('''insert into employers(employer_id, employer_name, employer_url)
+
+    def insert_values_employee(self, vacancy_list):
+        with self.conn:
+            for vacancy in vacancy_list:
+                self.cur.execute(f'''insert into employers(employer_id, employer_name, employer_url)
                           VALUES( %s, %s, %s)''',
                             (vacancy["employer"]["id"], vacancy["employer"]['name'],
                              vacancy["employer"]['url']))
 
-    def insert_values_vacancies(self, vacancy, cur):
-        cur.execute('''insert into vacancies(vacancy_id, city, employer_id, employer_name,
+    def insert_values_vacancies(self, vacancy_list):
+        with self.conn:
+            for vacancy in vacancy_list:
+                self.cur.execute('''insert into vacancies(vacancy_id, city, employer_id, employer_name,
          vacancy_name, salary_min, salary_currency, vacancy_url)
          VALUES( %s, %s, %s, %s, %s, %s, %s)''', (vacancy['id'], vacancy['area']['name'],
                              vacancy["employer"]["name"], vacancy['name'], vacancy['salary']['from'],
@@ -97,5 +105,4 @@ class HH_vacancy():
 
 
 
-hh = HH_vacancy()
-hh.get_vacancy()
+
