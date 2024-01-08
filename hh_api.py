@@ -1,4 +1,5 @@
 import requests
+import psycopg2
 import json
 
 
@@ -24,7 +25,6 @@ class HH_vacancy():
 
     def __init__(self, user: str="postgres", password: str="1967", host: str ='localhost', port: str ='5432'):
         self.conn = psycopg2.connect(user=user, password=password, host=host, port=port)
-        self.cur = self.conn.cursor()
 
     # def get_company_id(self):
     #     company_id_list = []
@@ -62,20 +62,27 @@ class HH_vacancy():
         # for vacancy in vacancy_list:
         #    print(vacancy)
 
+    def drop_database(self, db_name):
+        with self.conn.cursor() as cur:
+            self.conn.autocommit=True
+            cur.execute(f'drop database if exists {db_name}')
+
+
     def create_database(self, db_name):
-            with self.conn:
-                 self.cur.execute(f'drop database if exists {db_name}');
-                 self.cur.execute(f'create database {db_name}')
+        with self.conn.cursor() as cur:
+            self.conn.autocommit = True
+            cur.execute(f'create database {db_name}')
 
 
     def create_tables(self):
-        with self.conn:
-             self.cur.execute(f'''create table if not exists employers(
+        with self.conn.cursor() as cur:
+            self.conn.autocommit = True
+            cur.execute(f'''create table if not exists employers(
                 employer_id INTEGER PRIMARY KEY,
                 employer_name VARCHAR(100) NOT NULL,
-                employer_url VARCHAR(50),) ''')
+                employer_url VARCHAR(50)) ''')
 
-             self.cur.execute(f'''create table if not exists vacancies(
+            cur.execute(f'''create table if not exists vacancies(
                 vacancy_id INTEGER PRIMARY KEY,
                 employer_id INTEGER REFERENCES employers(employer_id),
                 employer_name VARCHAR(100) NOT NULL,
@@ -87,17 +94,19 @@ class HH_vacancy():
 
 
     def insert_values_employee(self, vacancy_list):
-        with self.conn:
+        with self.conn.cursor() as cur:
+            self.conn.autocommit = True
             for vacancy in vacancy_list:
-                self.cur.execute(f'''insert into employers(employer_id, employer_name, employer_url)
+                cur.execute(f'''insert into employers(employer_id, employer_name, employer_url)
                           VALUES( %s, %s, %s)''',
                             (vacancy["employer"]["id"], vacancy["employer"]['name'],
                              vacancy["employer"]['url']))
 
     def insert_values_vacancies(self, vacancy_list):
-        with self.conn:
+        with self.conn.cursor() as cur:
+            self.conn.autocommit = True
             for vacancy in vacancy_list:
-                self.cur.execute('''insert into vacancies(vacancy_id, city, employer_id, employer_name,
+                cur.execute('''insert into vacancies(vacancy_id, city, employer_id, employer_name,
          vacancy_name, salary_min, salary_currency, vacancy_url)
          VALUES( %s, %s, %s, %s, %s, %s, %s)''', (vacancy['id'], vacancy['area']['name'],
                              vacancy["employer"]["name"], vacancy['name'], vacancy['salary']['from'],
