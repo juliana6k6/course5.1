@@ -17,3 +17,4 @@ db_manager.get_vacancies_with_higher_salary()
 db_manager.get_avg_salary()
 db_manager.get_vacancies_with_keyword("программист")
 db_manager.get_companies_and_vacancies_count()
+m
