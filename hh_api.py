@@ -1,6 +1,5 @@
 import requests
 import psycopg2
-import json
 
 
 employer_ids =[
@@ -78,18 +77,21 @@ class HH_vacancy():
         with self.conn.cursor() as cur:
             self.conn.autocommit = True
             cur.execute(f'''create table if not exists employers(
-                employer_id INTEGER PRIMARY KEY,
-                employer_name VARCHAR(100) NOT NULL,
-                employer_url VARCHAR(50)) ''')
+            employer_id INTEGER primary key, 
+            employer_name VARCHAR(100) NOT NULL, 
+            employer_url VARCHAR(50))''')
 
             cur.execute(f'''create table if not exists vacancies(
                 vacancy_id INTEGER PRIMARY KEY,
-                employer_id INTEGER REFERENCES employers(employer_id),
+                employer_id INTEGER, 
                 employer_name VARCHAR(100) NOT NULL,
                 city varchar(50),
                 vacancy_name VARCHAR(100) NOT NULL,
                 salary_min INTEGER,
-                vacancy_url VARCHAR(50)
+                salary_currency VARCHAR(30),
+                vacancy_url VARCHAR(50),
+                CONSTRAINT fk_employers_employer_id FOREIGN KEY(employer_id) 
+                                REFERENCES employers(employer_id)
                 )''')
 
 
@@ -98,20 +100,17 @@ class HH_vacancy():
             self.conn.autocommit = True
             for vacancy in vacancy_list:
                 cur.execute(f'''insert into employers(employer_id, employer_name, employer_url)
-                          VALUES( %s, %s, %s)''',
-                            (vacancy["employer"]["id"], vacancy["employer"]['name'],
-                             vacancy["employer"]['url']))
+                          VALUES( %s, %s, %s) on conflict do nothing''',
+                            (vacancy['employer']['id'], vacancy['employer']['name'], vacancy['employer']['url']))
+
+
 
     def insert_values_vacancies(self, vacancy_list):
         with self.conn.cursor() as cur:
             self.conn.autocommit = True
             for vacancy in vacancy_list:
-                cur.execute('''insert into vacancies(vacancy_id, city, employer_id, employer_name,
+                cur.execute('''insert into vacancies(vacancy_id, city, employer_name,
          vacancy_name, salary_min, salary_currency, vacancy_url)
-         VALUES( %s, %s, %s, %s, %s, %s, %s)''', (vacancy['id'], vacancy['area']['name'],
-                             vacancy["employer"]["name"], vacancy['name'], vacancy['salary']['from'],
-                             vacancy['salary']["currency"], vacancy['alternate_url']))
-
-
-
-
+         VALUES( %s, %s, %s, %s, %s, %s, %s)''', (vacancy['id'], vacancy['area']['name'], vacancy['employer']['name'],
+                                                  vacancy['name'], vacancy['salary']['from'],
+                                                  vacancy['salary']["currency"], vacancy['alternate_url']))

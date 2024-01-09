@@ -1,7 +1,6 @@
 import psycopg2
 from hh_api import HH_vacancy
 from db_manager import DBManager
-import json
 from config import config
 
 params = config()

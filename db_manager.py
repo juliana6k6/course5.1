@@ -1,5 +1,3 @@
-import psycopg2
-
 class DBManager():
     """Класс для взаимодействия с базой данных"""
 
