@@ -110,7 +110,7 @@ class HH_vacancy():
             for vacancy in vacancy_list:
                 cur.execute(f'''insert into vacancies(vacancy_id, city, employer_name, 
                                                      vacancy_name, salary_min, vacancy_url) 
-                VALUES( %s, %s, %s, %s, %s, %s)''', (vacancy['id'], vacancy['area']['name'],
+                VALUES( %s, %s, %s, %s, %s, %s) on conflict do nothing''', (vacancy['id'], vacancy['area']['name'],
                                                          vacancy['employer']['name'], vacancy['name'],
                                                          vacancy['salary']['from'],
                                                          vacancy['alternate_url']))
