@@ -22,7 +22,7 @@ class HH_vacancy():
     # HH_AREAS = "https://api.hh.ru/suggests/areas"
     # company_id = "id_companies.json"
 
-    def __init__(self, user: str="postgres", password: str="1967", host: str ='localhost', port: str ='5432'):
+    def __init__(self, user: str = 'postgres', password: str = '1967', host: str = 'localhost', port: str = '5432'):
         self.conn = psycopg2.connect(user=user, password=password, host=host, port=port)
 
     # def get_company_id(self):
@@ -111,6 +111,6 @@ class HH_vacancy():
                 cur.execute(f'''insert into vacancies(vacancy_id, city, employer_name, 
                                                      vacancy_name, salary_min, vacancy_url) 
                 VALUES( %s, %s, %s, %s, %s, %s) on conflict do nothing''', (vacancy['id'], vacancy['area']['name'],
-                                                         vacancy['employer']['name'], vacancy['name'],
-                                                         vacancy['salary']['from'],
-                                                         vacancy['alternate_url']))
+                                                                            vacancy['employer']['name'],
+                                                                            vacancy['name'], vacancy['salary']['from'],
+                                                                            vacancy['alternate_url']))
