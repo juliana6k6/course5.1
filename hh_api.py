@@ -18,9 +18,6 @@ class HH_vacancy():
     """Класс для работы с API платформы HeadHunter"""
 
     HH_URL = "https://api.hh.ru/vacancies"
-    # HH_COMPANY = "https://api.hh.ru/employers"
-    # HH_AREAS = "https://api.hh.ru/suggests/areas"
-    # company_id = "id_companies.json"
 
     def __init__(self, user: str = 'postgres', password: str = '1967', host: str = 'localhost', port: str = '5432'):
         self.conn = psycopg2.connect(user=user, password=password, host=host, port=port)
