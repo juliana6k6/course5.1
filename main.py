@@ -2,7 +2,6 @@
 from hh_api import HH_vacancy
 from db_manager import DBManager
 from config import config
-from decimal import Decimal
 import pprint
 
 params = config()
@@ -41,7 +40,7 @@ while True:
     elif index == "3":
         number = db_manager.get_avg_salary()
         number1 = number[0][0]
-        print(round(number1))
+        print(round(number1, 2))
     elif index == "4":
         keyword = input("""Введите слово для поиска вакансий"
                             """)

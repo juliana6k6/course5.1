@@ -4,14 +4,14 @@ import psycopg2
 
 employer_ids =[
     "3127",  # Мегафон
-    "3529",  # Сбер
+    "3529",  # Сбербанк
     "78638",  # Тинькофф
     "1740",  # Яндекс
     "2748",  # Ростелеком
     "3776",  # МТС
     "2180",  # Ozon
     "1122462",  # Skyeng
-    "15478",  # VK
+    "15478",  # Вконтакте
     "84585"  # Авито
 ]
 class HH_vacancy():
@@ -21,23 +21,6 @@ class HH_vacancy():
 
     def __init__(self, user: str = 'postgres', password: str = '1967', host: str = 'localhost', port: str = '5432'):
         self.conn = psycopg2.connect(user=user, password=password, host=host, port=port)
-
-    # def get_company_id(self):
-    #     company_id_list = []
-    #     with open(self.company_id, encoding="utf-8") as file:
-    #         company_json = json.load(file)
-    #         for company in company_json:
-    #             company_id_list.append(company['id'])
-    #     return company_id_list
-    #
-    #
-    # def get_company_name(self):
-    #     company_name_list = []
-    #     with open(self.company_id, encoding="utf-8") as file:
-    #         company_json = json.load(file)
-    #         for company in company_json:
-    #             company_name_list.append(company['name'])
-    #     return company_name_list
 
 
     def get_vacancy(self):
@@ -55,8 +38,6 @@ class HH_vacancy():
                     if item["salary"]["from"]:
                         vacancy_list.append(item)
         return vacancy_list
-        # for vacancy in vacancy_list:
-        #    print(vacancy)
 
     def drop_database(self, db_name):
         with self.conn.cursor() as cur:
