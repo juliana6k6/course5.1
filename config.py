@@ -1,5 +1,5 @@
 from configparser import ConfigParser
-# import psycopg2
+
 
 def config(filename='database.ini', section='postgresql'):
     # create a parser
@@ -21,7 +21,7 @@ def config(filename='database.ini', section='postgresql'):
 #     conn = None
 #     try:
 #         parser = ConfigParser()
-#         parser.read('database.ini')
+#         parser.read('databaseexample.ini')
 #
 #         params = dict(parser.items('postgresql'))
 #         print('Connecting to the PostgreSQL database...')
@@ -39,5 +39,3 @@ def config(filename='database.ini', section='postgresql'):
 #             print('Database connection closed.')
 
 
-A = config()
-print(A)
