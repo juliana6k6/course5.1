@@ -1,10 +1,13 @@
 import psycopg2
 
-class DBManager():
+
+class DBManager:
     """Класс для взаимодействия с базой данных"""
 
-    def __init__(self, user: str='postgres', password: str='1967', host: str ='localhost', port: str ='5432'):
-        self.conn = psycopg2.connect(user=user, password=password, host=host, port=port)
+    def __init__(self, db_name, params):
+        self.params = params
+        self.db_name = db_name
+        self.conn = psycopg2.connect(dbname=self.db_name, **params)
         self.cursor = self.conn.cursor()
 
     def get_companies_and_vacancies_count(self):
@@ -14,14 +17,11 @@ class DBManager():
         result = self.cursor.fetchall()
         return result
 
-
-
     def get_all_vacancies(self):
         """Получает список всех вакансий"""
         self.cursor.execute(f"""Select * from vacancies order by salary_min DESC""")
         result = self.cursor.fetchall()
         return result
-
 
     def get_avg_salary(self):
         """Получает среднюю зарплату по вакансиям"""
@@ -41,4 +41,3 @@ class DBManager():
         self.cursor.execute(f"Select * from vacancies where vacancy_name like '%{keyword}%' order by salary_min DESC")
         result = self.cursor.fetchall()
         return result
-
