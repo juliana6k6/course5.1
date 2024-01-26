@@ -1,18 +1,18 @@
-# import psycopg2
-from utils import get_vacancy, drop_database, create_database, create_tables, insert_values_vacancies, \
-    insert_values_employee
+from hh_api import Api_client
 from db_manager import DBManager
 from config import config
 import pprint
 
 
 params = config()
-vacancy_list = get_vacancy()
-drop_database(params)
-create_database(params)
-create_tables(params)
-insert_values_employee(params, vacancy_list)
-insert_values_vacancies(params, vacancy_list)
+db_name = "hh_vacancies"
+api_client = Api_client(db_name, params)
+vacancy_list = api_client.get_vacancy()
+api_client.drop_database()
+api_client.create_database()
+api_client.create_tables()
+api_client.insert_values_employee(vacancy_list)
+api_client.insert_values_vacancies(vacancy_list)
 db_manager = DBManager("hh_vacancies", params)
 print("""Добрый день. Предлагаем вам найти вакансии с сайта Head Hunter у следующий кампаний: 
 Мегафон (3127), Сбербанк (3529), Тинькоф (78638), Яндекс (1740), Ростелеком (2748), МТС (3776), 
@@ -42,7 +42,7 @@ while True:
         number1 = number[0][0]
         print(round(number1, 2))
     elif index == "4":
-        keyword = input("""Введите слово для поиска вакансий"
+        keyword = input("""Введите слово для поиска вакансий
                             """)
         all_vacancies2 = db_manager.get_vacancies_with_keyword(keyword)
         if all_vacancies2:
